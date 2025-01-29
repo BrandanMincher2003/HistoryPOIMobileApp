@@ -1,0 +1,20 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme for Light Mode -->
+    <style name="Base.Theme.Coursework" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary colours -->
+        <item name="colorPrimary">@color/my_light_primary</item>
+        <item name="colorSecondary">@color/my_light_secondary</item>
+        <item name="colorTertiary">@color/my_light_tertiary</item>
+
+        <!-- Surface and background colours -->
+        <item name="colorSurface">@color/my_light_surface</item>
+        <item name="colorOnSurface">@color/my_light_onSurface</item>
+
+        <!-- Text and icon colours -->
+        <item name="colorOnPrimary">@color/my_light_onPrimary</item>
+        <item name="colorOnSecondary">@color/my_light_onSecondary</item>
+    </style>
+
+    <!-- Main Theme -->
+    <style name="Theme.Coursework" parent="Base.Theme.Coursework" />
+</resources>

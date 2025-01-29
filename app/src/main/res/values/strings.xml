@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Coursework</string>
+    <string name="password">Password:</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="email">Email:</string>
+    <string name="already_have_an_account_with_us">Already have an account with us?</string>
+    <string name="remember_me">Remember Me</string>
+    <string name="dont_have_an_account">Don\'t Have an account with us?</string>
+    <string name="login">Login</string>
+</resources>
