@@ -17,4 +17,8 @@
 
     <!-- Main Theme -->
     <style name="Theme.Coursework" parent="Base.Theme.Coursework" />
+    <style name="ShapeAppearanceOverlay.Custom.Full" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item> <!-- Fully rounded -->
+    </style>
 </resources>
