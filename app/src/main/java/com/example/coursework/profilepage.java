@@ -4,19 +4,27 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+
 import android.view.MenuItem;
 
 public class profilepage extends AppCompatActivity {
 
     private static final String PREFS_NAME = "ThemePrefs";
     private static final String KEY_IS_DARK_MODE = "isDarkMode";
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +34,9 @@ public class profilepage extends AppCompatActivity {
         applySavedTheme();
 
         setContentView(R.layout.activity_profilepage);
+
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
 
         // Find Dark Mode Switch
         SwitchMaterial darkModeSwitch = findViewById(R.id.dark_mode_switch);
@@ -45,6 +56,15 @@ public class profilepage extends AppCompatActivity {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 }
                 saveDarkModePreference(isChecked);
+            }
+        });
+
+        // Find Logout Button
+        MaterialButton logoutButton = findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logoutUser();
             }
         });
 
@@ -84,6 +104,14 @@ public class profilepage extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void logoutUser() {
+        mAuth.signOut();
+        Toast.makeText(profilepage.this, "Logged out successfully!", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(profilepage.this, loginpage.class);
+        startActivity(intent);
+        finish(); // Close current page
     }
 
     /**

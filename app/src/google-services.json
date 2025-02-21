@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "700201685858",
+    "project_id": "historygeo-5fa37",
+    "storage_bucket": "historygeo-5fa37.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:700201685858:android:3bed8b0b74fd49711d923b",
+        "android_client_info": {
+          "package_name": "com.example.coursework"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSVL-O4eTmXTy-Qa-wUWwSrikMCQD-BJY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:700201685858:android:9152c7fab8ff1c731d923b",
+        "android_client_info": {
+          "package_name": "com.example.firebaselab1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSVL-O4eTmXTy-Qa-wUWwSrikMCQD-BJY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
