@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Coursework</string>
+    <string name="app_name">HistGeo</string>
     <string name="password">Password:</string>
     <string name="sign_up">Sign Up</string>
     <string name="email">Email:</string>

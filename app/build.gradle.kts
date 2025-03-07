@@ -34,6 +34,8 @@ android {
 
 dependencies {
     implementation("com.google.firebase:firebase-auth:22.1.2")
+    implementation ("androidx.biometric:biometric:1.1.0")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

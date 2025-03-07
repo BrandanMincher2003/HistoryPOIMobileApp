@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Standard Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="my_light_primary">#6200EE</color>
-    <color name="my_light_secondary">#03DAC6</color>
-    <color name="my_light_tertiary">#BB86FC</color>
-    <color name="my_light_background">#FFFFFF</color>
-    <color name="my_light_surface">#F5F5F5</color>
-    <color name="my_light_onPrimary">#FFFFFF</color>
-    <color name="my_light_onSecondary">#000000</color>
-    <color name="my_light_onSurface">#000000</color>
-    <color name="my_dark_primary">#BB86FC</color>
-    <color name="my_dark_secondary">#03DAC6</color>
-    <color name="my_dark_tertiary">#3700B3</color>
-    <color name="my_dark_background">#121212</color>
-    <color name="my_dark_surface">#1E1E1E</color>
-    <color name="my_dark_onPrimary">#000000</color>
-    <color name="my_dark_onSecondary">#FFFFFF</color>
-    <color name="my_dark_onSurface">#FFFFFF</color>
+
+    <!-- Light Theme Colors (Pastel Blues) -->
+    <color name="my_light_primary">#A8D0E6</color> <!-- Soft pastel blue -->
+    <color name="my_light_secondary">#C5E1F7</color> <!-- Lighter pastel blue -->
+    <color name="my_light_tertiary">#E3F2FD</color> <!-- Very soft pastel blue -->
+    <color name="my_light_background">#F0F8FF</color> <!-- Light sky blue -->
+    <color name="my_light_surface">#E8F3FA</color> <!-- Slightly blue-tinted white -->
+    <color name="my_light_onPrimary">#404040</color> <!-- Dark grey for better contrast -->
+    <color name="my_light_onSecondary">#505050</color>
+    <color name="my_light_onSurface">#303030</color>
+
+    <!-- Dark Theme Colors (Brighter & Pastel Blues) -->
+    <color name="my_dark_primary">#B3E5FC</color> <!-- Brightened pastel blue -->
+    <color name="my_dark_secondary">#81D4FA</color>
+    <color name="my_dark_tertiary">#4FC3F7</color>
+    <color name="my_dark_background">#004AAD</color> <!-- Darkest blue as requested -->
+    <color name="my_dark_surface">#1976D2</color> <!-- Brightened but still dark enough for contrast -->
+    <color name="my_dark_onPrimary">#F0F8FF</color>
+    <color name="my_dark_onSecondary">#E1F5FE</color>
+    <color name="my_dark_onSurface">#D0E9FA</color>
 </resources>
