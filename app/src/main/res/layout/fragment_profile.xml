@@ -21,8 +21,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp"/>
 
-
-
     <!-- Card for Account Settings -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/account_settings_card"
@@ -40,33 +38,34 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
+            android:gravity="center"
             android:padding="16dp">
 
-            <com.google.android.material.textview.MaterialTextView
+            <!-- Edit Profile Button -->
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/edit_profile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Edit Profile"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:padding="8dp"/>
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="Edit Profile"/>
 
-            <com.google.android.material.textview.MaterialTextView
+            <!-- Change Password Button -->
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/change_password"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Change Password"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:padding="8dp"/>
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="Change Password"/>
 
-            <com.google.android.material.textview.MaterialTextView
+            <!-- Data & Privacy Button -->
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/data_privacy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Data &amp; Privacy"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:padding="8dp"/>
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="Data &amp; Privacy"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -76,12 +75,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Log Out"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
         app:layout_constraintTop_toBottomOf="@id/account_settings_card"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
-
 
     <!-- Card for App Settings -->
     <com.google.android.material.card.MaterialCardView
@@ -100,10 +97,12 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
+            android:gravity="center"
             android:padding="16dp">
 
+            <!-- Dark Mode Switch -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -111,7 +110,6 @@
                 android:gravity="center_vertical"
                 android:padding="8dp">
 
-                <!-- Dark Mode Label -->
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/dark_mode_label"
                     android:layout_width="0dp"
@@ -120,30 +118,28 @@
                     android:text="Dark Mode"
                     android:textAppearance="?attr/textAppearanceBodyMedium"/>
 
-                <!-- Dark Mode Switch -->
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/dark_mode_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
 
-            <com.google.android.material.textview.MaterialTextView
+            <!-- App Settings Button -->
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/app_settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="App Settings"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:padding="8dp"/>
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="App Settings"/>
 
-            <com.google.android.material.textview.MaterialTextView
+            <!-- Support Button -->
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/support"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Support"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:padding="8dp"/>
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="Support"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
