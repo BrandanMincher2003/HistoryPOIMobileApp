@@ -22,7 +22,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity {
+public class SignupActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     @Override
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         loginTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, loginpage.class);
+                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         String password = passwordField.getText().toString().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(MainActivity.this, "Please enter email and password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignupActivity.this, "Please enter email and password", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -92,13 +92,13 @@ public class MainActivity extends AppCompatActivity {
                             // Signup success, move to login page
                             Log.d("MainActivity", "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(MainActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(MainActivity.this, loginpage.class);
+                            Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
                             startActivity(intent);
                         } else {
                             // If signup fails, display a message to the user.
                             Log.w("MainActivity", "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(MainActivity.this, "Signup failed. Try again.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignupActivity.this, "Signup failed. Try again.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
