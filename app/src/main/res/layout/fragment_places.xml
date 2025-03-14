@@ -7,27 +7,13 @@
     android:layout_height="match_parent"
     tools:context=".ui.places.PlacesFragment">
 
-    <!-- Search Bar -->
-    <com.google.android.material.search.SearchBar
-        android:id="@+id/search_bar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="?attr/colorSurface"
-        android:hint="Search Locations"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+    <!-- RecyclerView for the Carousel -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/carousel_recycler"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/search_bar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="8dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
