@@ -7,13 +7,59 @@
     android:layout_height="match_parent"
     tools:context=".ui.places.PlacesFragment">
 
-    <!-- RecyclerView for the Carousel -->
+    <!-- Search Bar -->
+    <com.google.android.material.search.SearchBar
+        android:id="@+id/search_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="?attr/colorSurface"
+        android:hint="Search Locations"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Title for Local Places -->
+    <TextView
+        android:id="@+id/local_places_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Local Places"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/search_bar"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <!-- RecyclerView for Local Places -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/recyclerViewLocal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
-        android:padding="8dp" />
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/local_places_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
+    <!-- Title for Favourite Places -->
+    <TextView
+        android:id="@+id/favourites_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Favourite Places"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewLocal"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <!-- RecyclerView for Favourite Places -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewFavourites"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/favourites_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

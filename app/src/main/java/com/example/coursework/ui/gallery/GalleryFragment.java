@@ -1,66 +1,53 @@
 package com.example.coursework.ui.gallery;
 
 import android.os.Bundle;
-
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.Toast;
 import com.example.coursework.R;
+import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link GalleryFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class GalleryFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private RecyclerView recyclerView;
+    private GalleryAdapter adapter;
+    private FirebaseGalleryHelper firebaseGalleryHelper;
 
     public GalleryFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment GalleryFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static GalleryFragment newInstance(String param1, String param2) {
-        GalleryFragment fragment = new GalleryFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_gallery, container, false);
+        recyclerView = view.findViewById(R.id.galleryRecyclerView);
+
+        // Use GridLayout with 3 columns
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
+        // Initialize Firestore Helper
+        firebaseGalleryHelper = new FirebaseGalleryHelper();
+
+        // Fetch and display gallery items
+        loadGalleryItems();
+
+        return view;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_gallery, container, false);
+    private void loadGalleryItems() {
+        firebaseGalleryHelper.fetchGalleryItems(galleryItems -> {
+            if (galleryItems.isEmpty()) {
+                Toast.makeText(getContext(), "No data found in Firestore", Toast.LENGTH_SHORT).show();
+            }
+            adapter = new GalleryAdapter(getContext(), galleryItems, item -> {
+                // Handle item click (e.g., open details page)
+            });
+            recyclerView.setAdapter(adapter);
+        });
     }
 }

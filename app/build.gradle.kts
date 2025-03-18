@@ -46,6 +46,8 @@ dependencies {
     implementation ("com.google.android.libraries.places:places:3.4.0")
     implementation ("com.google.android.material:material:1.10.0")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+    implementation ("androidx.cardview:cardview:1.0.0")
+
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
     implementation(libs.appcompat)

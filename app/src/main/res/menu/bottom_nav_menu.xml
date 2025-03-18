@@ -2,11 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
     <item
-        android:id="@+id/nav_profile"
-        android:icon="@drawable/ic_profile"
-        android:title="Profile"
+        android:id="@+id/nav_search"
+        android:icon="@drawable/ic_search"
+        android:title="Places"
         app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/nav_gallery"
         android:icon="@drawable/ic_gallery"
@@ -19,15 +21,17 @@
         android:title="Map"
         app:showAsAction="ifRoom" />
 
-    <item
-        android:id="@+id/nav_search"
-        android:icon="@drawable/ic_search"
-        android:title="Places"
-        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/nav_trophies"
         android:icon="@drawable/ic_favorites"
         android:title="Trophies"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/ic_profile"
+        android:title="Profile"
         app:showAsAction="ifRoom" />
 
 
