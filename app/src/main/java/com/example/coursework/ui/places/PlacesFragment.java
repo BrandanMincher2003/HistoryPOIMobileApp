@@ -30,6 +30,7 @@ import java.util.List;
 
 public class PlacesFragment extends Fragment {
 
+    private LocationCallback locationCallback;
     private RecyclerView recyclerViewLocal;
     private ImageAdapter localAdapter;
     private List<PlaceItem> localItems;
@@ -90,11 +91,11 @@ public class PlacesFragment extends Fragment {
     private void requestNewLocationData() {
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(5000); // Update every 5 seconds
-        locationRequest.setFastestInterval(2000); // Minimum time interval for location updates
+        locationRequest.setInterval(5000); // Request location updates every 5 seconds
+        locationRequest.setFastestInterval(2000);
 
-
-        fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+        // Assigning the locationCallback properly
+        locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 if (locationResult != null && !locationResult.getLocations().isEmpty()) {
@@ -103,12 +104,16 @@ public class PlacesFragment extends Fragment {
                         userLatitude = location.getLatitude();
                         userLongitude = location.getLongitude();
                         fetchLocationsFromFirestore();
-                        fusedLocationClient.removeLocationUpdates(this);
                     }
                 }
             }
-        }, Looper.getMainLooper());
+        };
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
+
+
+
 
     /**
      * Fetches places from Firestore and calculates distance to the user
@@ -121,11 +126,15 @@ public class PlacesFragment extends Fragment {
                     String name = document.getString("Name");
                     String imageUrl = document.getString("Image");
 
-                    // Ensure latitude and longitude are numbers, not strings
-                    double latitude = document.contains("Latitude") && document.get("Latitude") instanceof Number
-                            ? document.getDouble("Latitude") : 0.0;
-                    double longitude = document.contains("Longitude") && document.get("Longitude") instanceof Number
-                            ? document.getDouble("Longitude") : 0.0;
+                    double latitude = 0.0;
+                    double longitude = 0.0;
+
+                    try {
+                        latitude = Double.parseDouble(document.getString("Latitude"));
+                        longitude = Double.parseDouble(document.getString("Longitude"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     if (name != null && imageUrl != null) {
                         double distance = calculateDistance(userLatitude, userLongitude, latitude, longitude);
@@ -134,10 +143,12 @@ public class PlacesFragment extends Fragment {
                         localItems.add(new PlaceItem(imageUrl, name, distanceText));
                     }
                 }
-                localAdapter.notifyDataSetChanged();
+                localAdapter.notifyDataSetChanged(); // Refresh UI dynamically
             }
         });
     }
+
+
 
     /**
      * Uses the Haversine formula to calculate the distance between two locations
@@ -164,4 +175,13 @@ public class PlacesFragment extends Fragment {
             requestUserLocation(); // Retry fetching location after permission is granted
         }
     }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (fusedLocationClient != null && locationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
+        }
+    }
+
+
 }

@@ -1,66 +1,89 @@
 package com.example.coursework.ui.trophies;
 
 import android.os.Bundle;
-
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.Toast;
 import com.example.coursework.R;
+import com.example.coursework.ui.trophies.TrophiesAdapter;
+import com.example.coursework.model.TrophyItem;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link TrophiesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class TrophiesFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private RecyclerView achievedRecyclerView, notAchievedRecyclerView;
+    private TrophiesAdapter achievedAdapter, notAchievedAdapter;
+    private List<TrophyItem> achievedList, notAchievedList;
+    private FirebaseFirestore db;
 
     public TrophiesFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TrophiesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static TrophiesFragment newInstance(String param1, String param2) {
-        TrophiesFragment fragment = new TrophiesFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_trophies, container, false);
+
+        achievedRecyclerView = view.findViewById(R.id.achievedRecyclerView);
+        notAchievedRecyclerView = view.findViewById(R.id.notAchievedRecyclerView);
+
+        achievedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        notAchievedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        achievedList = new ArrayList<>();
+        notAchievedList = new ArrayList<>();
+
+        db = FirebaseFirestore.getInstance();
+
+        // Fetch achievements from Firestore
+        loadTrophyData();
+
+        achievedAdapter = new TrophiesAdapter(getContext(), achievedList);
+        notAchievedAdapter = new TrophiesAdapter(getContext(), notAchievedList);
+
+        achievedRecyclerView.setAdapter(achievedAdapter);
+        notAchievedRecyclerView.setAdapter(notAchievedAdapter);
+
+        return view;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private void loadTrophyData() {
+        db.collection("achievements").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                achievedList.clear();
+                notAchievedList.clear();
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_trophies, container, false);
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    String name = document.getString("Name");
+                    String description = document.getString("Description");
+
+                    // Assume achievements are stored based on completion status
+                    boolean isAchieved = document.contains("Achieved") && document.getBoolean("Achieved") != null && document.getBoolean("Achieved");
+
+                    if (name != null && description != null) {
+                        TrophyItem trophy = new TrophyItem(name, description, isAchieved);
+                        if (isAchieved) {
+                            achievedList.add(trophy);
+                        } else {
+                            notAchievedList.add(trophy);
+                        }
+                    }
+                }
+
+                achievedAdapter.notifyDataSetChanged();
+                notAchievedAdapter.notifyDataSetChanged();
+            } else {
+                Toast.makeText(getContext(), "Failed to load achievements", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

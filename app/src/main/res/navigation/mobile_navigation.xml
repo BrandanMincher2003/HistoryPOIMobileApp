@@ -33,5 +33,15 @@
         android:name="com.example.coursework.ui.places.PlacesFragment"
         android:label="Places"
         tools:layout="@layout/fragment_places" />
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.example.coursework.ui.camera.CameraFragment"
+        android:label="Camera"
+        tools:layout="@layout/fragment_camera" />
+
+    <action
+        android:id="@+id/action_galleryFragment_to_cameraFragment"
+        app:destination="@id/cameraFragment" />
+
 
 </navigation>
