@@ -9,24 +9,19 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.example.coursework.ui.users.UserPreferences;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executor;
 
 public class LoginActivity extends AppCompatActivity {
@@ -35,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     private MaterialSwitch rememberMeSwitch;
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
+    private UserPreferences userPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         // Biometric authentication check
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
+            userPreferences = new UserPreferences(this, user.getUid());
             setupBiometricAuthentication(user.getUid());
         }
     }
@@ -83,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                         public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                             super.onAuthenticationSucceeded(result);
                             Toast.makeText(LoginActivity.this, "Authentication successful!", Toast.LENGTH_SHORT).show();
-                            loadUserPreferences(userId); // Apply dark mode preference
+                            userPreferences.loadFromFirestore(); // Load user preferences
                             navigateToMainActivity();
                         }
 
@@ -132,45 +129,16 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            createUserDocument(user.getUid(), user.getEmail());
-                            loadUserPreferences(user.getUid()); // Apply user preferences
+                            userPreferences = new UserPreferences(this, user.getUid());
+                            userPreferences.loadFromFirestore(); // Load preferences
+
+                            navigateToMainActivity();
                         }
-                        navigateToMainActivity();
                     } else {
                         Log.w("LoginPage", "signInWithEmail:failure", task.getException());
                         Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-
-    /**
-     * Creates or updates Firestore document for user
-     */
-    private void createUserDocument(String userId, String email) {
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("email", email);
-        userData.put("darkMode", false); // Default preference
-
-        db.collection("users").document(userId)
-                .set(userData, SetOptions.merge()) // Merge avoids overwriting
-                .addOnSuccessListener(aVoid -> Log.d("Firestore", "User document created/updated"))
-                .addOnFailureListener(e -> Log.e("Firestore", "Error creating user document", e));
-    }
-
-    /**
-     * Loads dark mode preference from Firestore and applies it immediately
-     */
-    private void loadUserPreferences(String userId) {
-        DocumentReference userRef = db.collection("users").document(userId);
-
-        userRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                Boolean isDarkMode = documentSnapshot.getBoolean("darkMode");
-                if (isDarkMode != null) {
-                    AppCompatDelegate.setDefaultNightMode(isDarkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-                }
-            }
-        }).addOnFailureListener(e -> Log.e("Firestore", "Failed to load user preferences", e));
     }
 
     /**
