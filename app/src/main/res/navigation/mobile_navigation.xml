@@ -43,5 +43,22 @@
         android:id="@+id/action_galleryFragment_to_cameraFragment"
         app:destination="@id/cameraFragment" />
 
+    <fragment
+        android:id="@+id/nav_support"
+        android:name="com.example.coursework.ui.profile.SupportFragment"
+        android:label="Support"
+        tools:layout="@layout/fragment_support" />
+    <action
+        android:id="@+id/action_profileFragment_to_supportFragment"
+        app:destination="@id/nav_support" />
+
+    <fragment
+        android:id="@+id/nav_data_privacy"
+        android:name="com.example.coursework.ui.profile.DataPrivacyFragment"
+        android:label="Data &amp; Privacy"
+        tools:layout="@layout/fragment_data_privacy" />
+    <action
+        android:id="@+id/action_profileFragment_to_dataPrivacyFragment"
+        app:destination="@id/nav_data_privacy" />
 
 </navigation>

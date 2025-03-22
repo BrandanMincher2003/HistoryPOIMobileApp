@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.coursework.LoginActivity;
 import com.example.coursework.databinding.FragmentProfileBinding;
@@ -34,6 +36,8 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         return binding.getRoot();
+
+
     }
 
     @Override
@@ -57,6 +61,19 @@ public class ProfileFragment extends Fragment {
         // Log Out Button - Traditional way
         MaterialButton logoutButton = view.findViewById(R.id.logout_button); // Find the logout button
         logoutButton.setOnClickListener(v -> logoutUser()); // Set the click listener for the logout button
+
+        binding.support.setOnClickListener(v -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_profileFragment_to_supportFragment);
+        });
+        binding.dataPrivacy.setOnClickListener(v -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_profileFragment_to_dataPrivacyFragment);
+        });
+
+
+
+
     }
 
     /**

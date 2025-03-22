@@ -8,6 +8,10 @@
     android:layout_height="match_parent"
     tools:context=".SignupActivity">
 
+]
+
+
+
     <!-- Material3 TextView (Replaced with MaterialTextView) -->
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/signupText"

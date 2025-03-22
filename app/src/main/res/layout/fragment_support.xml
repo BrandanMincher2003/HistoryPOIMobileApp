@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:background="?android:colorBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/support_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HistGeo Support"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:textColor="?attr/colorOnSurface"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Phone Number -->
+        <TextView
+            android:id="@+id/support_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📞 Phone: 07491 681292"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:layout_marginBottom="20dp"
+            android:justificationMode="inter_word" />
+
+        <!-- Features Help -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🗺️ Discover nearby historical landmarks with our interactive map. Simply allow location access and explore your area. Tap red markers to view names, photos, dates, and detailed descriptions of each site."
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:layout_marginBottom="12dp"
+            android:justificationMode="inter_word" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="❤️ Love a place? Tap the heart icon to save it to your Favourites. You can revisit them anytime and build your own list of cherished locations."
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:layout_marginBottom="12dp"
+            android:justificationMode="inter_word" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🏆 Earn trophies by visiting historical locations. The more places you explore, the more achievements you'll unlock. It’s history made fun!"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:layout_marginBottom="12dp"
+            android:justificationMode="inter_word" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🖼️ Capture memories of your visits using the built-in camera feature. Your photos are stored in your account and viewable in your personal gallery."
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:layout_marginBottom="12dp"
+            android:justificationMode="inter_word" />
+
+        <!-- Guidance and Contact -->
+        <TextView
+            android:id="@+id/support_contact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💬 Need assistance, want to report an issue, or suggest a feature? Our team is here to support you. Reach out via phone or submit feedback directly through the app. We’re always happy to help you get the most out of HistGeo."
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:layout_marginBottom="24dp"
+            android:justificationMode="inter_word" />
+    </LinearLayout>
+</ScrollView>

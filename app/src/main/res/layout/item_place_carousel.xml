@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="160dp"
     android:layout_height="wrap_content"
     android:clickable="true"
@@ -14,11 +15,10 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
+        android:layout_height="wrap_content"
         android:padding="12dp">
 
-        <!-- Image (Click Event) -->
+        <!-- Image -->
         <ImageView
             android:id="@+id/place_image"
             android:layout_width="match_parent"
@@ -29,7 +29,7 @@
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground" />
 
-        <!-- Place Name -->
+        <!-- Place name -->
         <TextView
             android:id="@+id/place_name"
             android:layout_width="wrap_content"
@@ -37,17 +37,36 @@
             android:text="Place Name"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorOnSurface"
-            android:paddingTop="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp"
             android:gravity="center"/>
 
-        <!-- Distance -->
-        <TextView
-            android:id="@+id/place_distance"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1.2 miles"
-            android:textAppearance="?attr/textAppearanceBodySmall"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:gravity="center"/>
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/place_distance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="1.2 miles"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:gravity="start" />
+
+            <ImageView
+                android:id="@+id/heart_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_favorites"
+                android:contentDescription="Add to favourites"
+                android:clickable="true"
+                android:focusable="true"/>
+        </LinearLayout>
+
+        </LinearLayout>
+
 </com.google.android.material.card.MaterialCardView>

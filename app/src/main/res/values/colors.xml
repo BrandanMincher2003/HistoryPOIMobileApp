@@ -1,26 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Standard Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Light Theme Colors (Pastel Blues) -->
-    <color name="my_light_primary">#A8D0E6</color> <!-- Soft pastel blue -->
-    <color name="my_light_secondary">#C5E1F7</color> <!-- Lighter pastel blue -->
-    <color name="my_light_tertiary">#E3F2FD</color> <!-- Very soft pastel blue -->
-    <color name="my_light_background">#F0F8FF</color> <!-- Light sky blue -->
-    <color name="my_light_surface">#E8F3FA</color> <!-- Slightly blue-tinted white -->
-    <color name="my_light_onPrimary">#404040</color> <!-- Dark grey for better contrast -->
+    <!-- 🌿 Light Theme Colors (Soft Pastel Greens) -->
+    <color name="my_light_primary">#B8E6C1</color> <!-- Soft pastel green -->
+    <color name="my_light_secondary">#D4F4D2</color> <!-- Lighter pastel green -->
+    <color name="my_light_tertiary">#E9FAE5</color> <!-- Very soft pastel green -->
+    <color name="my_light_background">#F1FBF2</color> <!-- Light minty green -->
+    <color name="my_light_surface">#ECF9ED</color> <!-- Slightly green-tinted white -->
+    <color name="my_light_onPrimary">#404040</color> <!-- Dark grey for contrast -->
     <color name="my_light_onSecondary">#505050</color>
     <color name="my_light_onSurface">#303030</color>
 
-    <!-- Dark Theme Colors (Brighter & Pastel Blues) -->
-    <color name="my_dark_primary">#B3E5FC</color> <!-- Brightened pastel blue -->
-    <color name="my_dark_secondary">#81D4FA</color>
-    <color name="my_dark_tertiary">#4FC3F7</color>
-    <color name="my_dark_background">#004AAD</color> <!-- Darkest blue as requested -->
-    <color name="my_dark_surface">#1976D2</color> <!-- Brightened but still dark enough for contrast -->
-    <color name="my_dark_onPrimary">#F0F8FF</color>
-    <color name="my_dark_onSecondary">#E1F5FE</color>
-    <color name="my_dark_onSurface">#D0E9FA</color>
+    <!-- 🌱 Dark Theme Colors (Elegant Greens) -->
+    <color name="my_dark_primary">#A5D6A7</color> <!-- Muted pastel green -->
+    <color name="my_dark_secondary">#81C784</color> <!-- Softer green -->
+    <color name="my_dark_tertiary">#66BB6A</color> <!-- Brighter touch of green -->
+    <color name="my_dark_background">#1E1E1E</color> <!-- Dark grey (unchanged for contrast) -->
+    <color name="my_dark_surface">#2A2A2A</color> <!-- Medium-dark grey for surfaces -->
+    <color name="my_dark_onPrimary">#FAFAFA</color> <!-- Very light grey text -->
+    <color name="my_dark_onSecondary">#E3F9EA</color> <!-- Light green-tinted white -->
+    <color name="my_dark_onSurface">#D9F5E2</color> <!-- Light green for text on surface -->
+
+    <!-- Other UI Utility Colours -->
+    <color name="red">#E53935</color>
+    <color name="grey">#BDBDBD</color>
 </resources>
