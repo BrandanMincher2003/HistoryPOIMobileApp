@@ -61,4 +61,22 @@
         android:id="@+id/action_profileFragment_to_dataPrivacyFragment"
         app:destination="@id/nav_data_privacy" />
 
+
+    <fragment
+        android:id="@+id/placeDetailsFragment"
+        android:name="com.example.coursework.ui.places.PlaceDetailsFragment"
+        android:label="Place Details"
+        tools:layout="@layout/fragment_place_details" />
+    <action
+        android:id="@+id/action_placesFragment_to_placeDetailsFragment"
+        app:destination="@id/placeDetailsFragment"
+        />
+    <action
+        android:id="@+id/action_placeDetailsFragment_to_nav_map"
+        app:destination="@id/nav_map" />
+
+
+
+
+
 </navigation>

@@ -9,6 +9,8 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
@@ -51,13 +54,13 @@ public class PlacesFragment extends Fragment {
         recyclerViewLocal = view.findViewById(R.id.recyclerViewLocal);
         recyclerViewLocal.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         localItems = new ArrayList<>();
-        localAdapter = new ImageAdapter(getContext(), localItems, favouritePlaceNames);
+        localAdapter = new ImageAdapter(getContext(), localItems, favouritePlaceNames, this::openPlaceDetails);
         recyclerViewLocal.setAdapter(localAdapter);
 
         recyclerViewFavourites = view.findViewById(R.id.recyclerViewFavourites);
         recyclerViewFavourites.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         favouritesItems = new ArrayList<>();
-        favouritesAdapter = new ImageAdapter(getContext(), favouritesItems, favouritePlaceNames);
+        favouritesAdapter = new ImageAdapter(getContext(), favouritesItems, favouritePlaceNames, this::openPlaceDetails);
         recyclerViewFavourites.setAdapter(favouritesAdapter);
 
         db = FirebaseFirestore.getInstance();
@@ -67,6 +70,30 @@ public class PlacesFragment extends Fragment {
         requestUserLocation();
 
         return view;
+    }
+
+    // 👇 Add this method below your existing methods
+    private void openPlaceDetails(PlaceItem item) {
+        db.collection("Locations")
+                .whereEqualTo("Name", item.getName())
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                        String city = document.getString("City");
+                        String description = document.getString("Description");
+                        String image = document.getString("Image");
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("name", item.getName());
+                        bundle.putString("city", city);
+                        bundle.putString("description", description);
+                        bundle.putString("image", image);
+
+                        NavController navController = NavHostFragment.findNavController(this);
+                        navController.navigate(R.id.action_placesFragment_to_placeDetailsFragment, bundle);
+                    }
+                });
     }
 
     @SuppressLint("MissingPermission")
@@ -194,4 +221,5 @@ public class PlacesFragment extends Fragment {
             fusedLocationClient.removeLocationUpdates(locationCallback);
         }
     }
+
 }

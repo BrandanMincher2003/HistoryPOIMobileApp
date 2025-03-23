@@ -28,24 +28,20 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     private Context context;
     private List<PlaceItem> items;
-    private OnItemClickListener onItemClickListener;
+    private OnPlaceClickListener onPlaceClickListener;
     private Set<String> favouritePlaceNames;
     private String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public interface OnItemClickListener {
-        void onClick(ImageView imageView, String imageUrl);
+    public interface OnPlaceClickListener {
+        void onPlaceClick(PlaceItem placeItem);
     }
 
-    // ✅ NEW CONSTRUCTOR with shared favourite set
-    public ImageAdapter(Context context, List<PlaceItem> items, Set<String> favouritePlaceNames) {
+    public ImageAdapter(Context context, List<PlaceItem> items, Set<String> favouritePlaceNames, OnPlaceClickListener listener) {
         this.context = context;
         this.items = items;
         this.favouritePlaceNames = favouritePlaceNames;
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.onItemClickListener = listener;
+        this.onPlaceClickListener = listener;
     }
 
     @NonNull
@@ -60,7 +56,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         PlaceItem item = items.get(position);
 
         Glide.with(context).load(item.getImageUrl()).into(holder.imageView);
-
         holder.name.setText(item.getName());
         holder.distance.setText(item.getDistance());
 
@@ -78,12 +73,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 favouritePlaceNames.add(item.getName());
                 Toast.makeText(context, "Added to favourites", Toast.LENGTH_SHORT).show();
             }
-            notifyDataSetChanged(); // refresh both carousels if shared
+            notifyDataSetChanged();
         });
 
         holder.imageView.setOnClickListener(v -> {
-            if (onItemClickListener != null) {
-                onItemClickListener.onClick(holder.imageView, item.getImageUrl());
+            if (onPlaceClickListener != null) {
+                onPlaceClickListener.onPlaceClick(item);
             }
         });
     }
@@ -136,3 +131,4 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         }
     }
 }
+

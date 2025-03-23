@@ -18,72 +18,95 @@ import androidx.fragment.app.Fragment;
 import com.example.coursework.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     private FirebaseFirestore db;
+    private double passedLat = 0.0, passedLon = 0.0;
+    private boolean hasZoomTarget = false;
 
-    public MapFragment() {
-        // Required empty public constructor
-    }
+    public MapFragment() {}
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        // Initialize Firestore
         db = FirebaseFirestore.getInstance();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
-        // Initialize Map
+        // Get arguments passed from PlaceDetailsFragment
+        Bundle args = getArguments();
+        if (args != null) {
+            if (args.containsKey("latitude") && args.containsKey("longitude")) {
+                try {
+                    passedLat = args.getDouble("latitude");
+                    passedLon = args.getDouble("longitude");
+                    hasZoomTarget = true;
+                    Log.d("MapFragment", "Received lat/lon from bundle: " + passedLat + ", " + passedLon);
+                } catch (Exception e) {
+                    Log.e("MapFragment", "Failed to parse lat/lon from bundle", e);
+                }
+            }
+        }
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
 
-        // Initialize FusedLocationProviderClient
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
-
         return view;
     }
 
     @SuppressLint("MissingPermission")
-    @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Enable location if permissions are granted
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
         }
-        // Zoom to user's current location
-        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null) {
-                LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(userLatLng)
-                        .zoom(13f)
-                        .build();
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            }
-        });
 
-        // Load locations from Firestore and add markers
+        if (hasZoomTarget && passedLat != 0.0 && passedLon != 0.0) {
+            Toast.makeText(requireContext(), "Zooming to selected location", Toast.LENGTH_SHORT).show();
+
+            LatLng placeLatLng = new LatLng(passedLat, passedLon);
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(placeLatLng)
+                    .zoom(16f)
+                    .build();
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+            mMap.addMarker(new MarkerOptions()
+                    .position(placeLatLng)
+                    .title("Selected Location")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+        } else {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                if (location != null) {
+                    LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(userLatLng)
+                            .zoom(13f)
+                            .build();
+                    mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                }
+            });
+        }
+
         loadLocationsFromFirestore();
     }
 
@@ -94,8 +117,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
                 String name = document.getString("Name");
                 String city = document.getString("City");
-
-                // Fetch latitude & longitude as strings and convert safely
                 String latStr = document.getString("Latitude");
                 String lonStr = document.getString("Longitude");
 
@@ -104,15 +125,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         double latitude = Double.parseDouble(latStr);
                         double longitude = Double.parseDouble(lonStr);
                         LatLng location = new LatLng(latitude, longitude);
-
-                        // Add green default marker
                         addDefaultMarker(name, city, location);
-
                     } catch (NumberFormatException e) {
-                        Log.e("FirestoreError", "Invalid latitude/longitude format: " + latStr + ", " + lonStr, e);
+                        Log.e("FirestoreError", "Invalid coordinates", e);
                     }
-                } else {
-                    Log.e("FirestoreError", "Missing latitude/longitude fields in Firestore document: " + document.getId());
                 }
             }
         }).addOnFailureListener(e ->

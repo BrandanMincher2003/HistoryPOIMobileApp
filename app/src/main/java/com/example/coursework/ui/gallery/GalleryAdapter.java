@@ -1,31 +1,29 @@
 package com.example.coursework.ui.gallery;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.example.coursework.R;
+
 import java.util.List;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder> {
 
     private final Context context;
     private final List<GalleryItem> galleryItems;
-    private final OnItemClickListener listener;
 
-    public interface OnItemClickListener {
-        void onItemClick(GalleryItem item);
-    }
-
-    public GalleryAdapter(Context context, List<GalleryItem> galleryItems, OnItemClickListener listener) {
+    public GalleryAdapter(Context context, List<GalleryItem> galleryItems) {
         this.context = context;
         this.galleryItems = galleryItems;
-        this.listener = listener;
     }
 
     @NonNull
@@ -39,15 +37,15 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
     public void onBindViewHolder(@NonNull GalleryViewHolder holder, int position) {
         GalleryItem item = galleryItems.get(position);
 
-        // Load image using Glide
         Glide.with(context).load(item.getImageUrl()).into(holder.imageView);
-
-        // Set text values
         holder.locationName.setText(item.getLocationName());
         holder.date.setText(item.getDate());
 
-        // Set click listener
-        holder.itemView.setOnClickListener(v -> listener.onItemClick(item));
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, FullScreenImageActivity.class);
+            intent.putExtra("imageUrl", item.getImageUrl());
+            context.startActivity(intent);
+        });
     }
 
     @Override
