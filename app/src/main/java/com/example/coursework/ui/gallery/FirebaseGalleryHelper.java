@@ -18,7 +18,6 @@ public class FirebaseGalleryHelper {
         galleryCollection = db.collection("gallery");
     }
 
-    // Fetch all locations from gallery/{documentId}/Locations
     public void fetchGalleryItems(Consumer<List<GalleryItem>> callback) {
         galleryCollection.get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
@@ -26,7 +25,7 @@ public class FirebaseGalleryHelper {
                 AtomicInteger pendingQueries = new AtomicInteger(task.getResult().size()); // Track queries
 
                 if (pendingQueries.get() == 0) {
-                    callback.accept(galleryItems); // No documents found
+                    callback.accept(galleryItems);
                     return;
                 }
 
@@ -35,12 +34,11 @@ public class FirebaseGalleryHelper {
                     fetchLocations(locationsCollection, galleryItems, pendingQueries, callback);
                 }
             } else {
-                callback.accept(new ArrayList<>()); // Return empty if failed
+                callback.accept(new ArrayList<>());
             }
         });
     }
 
-    // Helper function to fetch images from the Locations subcollection
     private void fetchLocations(CollectionReference locationCollection, List<GalleryItem> galleryItems, AtomicInteger pendingQueries, Consumer<List<GalleryItem>> callback) {
         locationCollection.get().addOnCompleteListener(locationTask -> {
             if (locationTask.isSuccessful() && locationTask.getResult() != null) {

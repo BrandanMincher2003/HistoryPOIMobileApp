@@ -41,18 +41,16 @@ public class TrophiesAdapter extends RecyclerView.Adapter<TrophiesAdapter.ViewHo
         holder.nameTextView.setText(trophy.getName());
         holder.descriptionTextView.setText(trophy.getDescription());
 
-        // Visually dim the item if not achieved
         holder.itemView.setAlpha(trophy.isAchieved() ? 1.0f : 0.5f);
 
-        // Load the image from Firebase Storage using the relative path
         String imagePath = trophy.getImagePath();
         if (imagePath != null && !imagePath.isEmpty()) {
             StorageReference imageRef = FirebaseStorage.getInstance().getReference().child(imagePath);
 
             Glide.with(context)
                     .load(imageRef)
-                    .placeholder(R.drawable.ic_trophy) // Default image while loading
-                    .error(R.drawable.ic_trophy)       // Default image if failed
+                    .placeholder(R.drawable.ic_trophy)
+                    .error(R.drawable.ic_trophy)
                     .into(holder.iconImageView);
         } else {
             holder.iconImageView.setImageResource(R.drawable.ic_trophy);

@@ -6,6 +6,12 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -13,55 +19,84 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+
 import com.example.coursework.R;
 import com.example.coursework.ui.carousel.ImageAdapter;
 import com.example.coursework.ui.carousel.PlaceItem;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.*;
+import com.google.android.material.search.SearchBar;
+import com.google.android.material.search.SearchView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.google.firebase.firestore.*;
+
+import java.util.*;
 
 public class PlacesFragment extends Fragment {
 
     private LocationCallback locationCallback;
     private RecyclerView recyclerViewLocal, recyclerViewFavourites;
     private ImageAdapter localAdapter, favouritesAdapter;
-    private List<PlaceItem> localItems, favouritesItems;
+    private List<PlaceItem> localItems = new ArrayList<>();
+    private List<PlaceItem> filteredItems = new ArrayList<>();
+    private List<PlaceItem> favouritesItems = new ArrayList<>();
+    private Set<String> favouritePlaceNames = new HashSet<>();
+
     private FirebaseFirestore db;
     private FusedLocationProviderClient fusedLocationClient;
     private double userLatitude = 0.0, userLongitude = 0.0;
     private String currentUserId;
-    private Set<String> favouritePlaceNames = new HashSet<>();
 
-    public PlacesFragment() {}
+    private SearchBar searchBar;
+    private SearchView searchView;
+
+    public PlacesFragment() {
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_places, container, false);
 
         recyclerViewLocal = view.findViewById(R.id.recyclerViewLocal);
-        recyclerViewLocal.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        localItems = new ArrayList<>();
-        localAdapter = new ImageAdapter(getContext(), localItems, favouritePlaceNames, this::openPlaceDetails);
-        recyclerViewLocal.setAdapter(localAdapter);
-
         recyclerViewFavourites = view.findViewById(R.id.recyclerViewFavourites);
+
+        recyclerViewLocal.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         recyclerViewFavourites.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        favouritesItems = new ArrayList<>();
+
+        localAdapter = new ImageAdapter(getContext(), filteredItems, favouritePlaceNames, this::openPlaceDetails);
         favouritesAdapter = new ImageAdapter(getContext(), favouritesItems, favouritePlaceNames, this::openPlaceDetails);
+
+        recyclerViewLocal.setAdapter(localAdapter);
         recyclerViewFavourites.setAdapter(favouritesAdapter);
+
+        searchBar = view.findViewById(R.id.search_bar);
+        searchView = new SearchView(requireContext());
+        searchView.setHint("Search Locations");
+        searchBar.setOnClickListener(v -> searchView.show());
+
+        searchView.addTransitionListener((sv, prevState, newState) -> {
+            if (newState == SearchView.TransitionState.HIDDEN) {
+                searchBar.setText("");
+                filteredItems.clear();
+                filteredItems.addAll(localItems);
+                localAdapter.notifyDataSetChanged();
+            }
+
+        });
+
+        searchView.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterLocalPlaces(s.toString());
+            }
+        });
 
         db = FirebaseFirestore.getInstance();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
@@ -72,7 +107,16 @@ public class PlacesFragment extends Fragment {
         return view;
     }
 
-    // 👇 Add this method below your existing methods
+    private void filterLocalPlaces(String query) {
+        filteredItems.clear();
+        for (PlaceItem item : localItems) {
+            if (item.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredItems.add(item);
+            }
+        }
+        localAdapter.notifyDataSetChanged();
+    }
+
     private void openPlaceDetails(PlaceItem item) {
         db.collection("Locations")
                 .whereEqualTo("Name", item.getName())
@@ -100,7 +144,7 @@ public class PlacesFragment extends Fragment {
     @SuppressLint("MissingPermission")
     private void requestUserLocation() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
             return;
         }
 
@@ -118,10 +162,10 @@ public class PlacesFragment extends Fragment {
 
     @SuppressLint("MissingPermission")
     private void requestNewLocationData() {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(2000);
+        LocationRequest locationRequest = LocationRequest.create()
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                .setInterval(5000)
+                .setFastestInterval(2000);
 
         locationCallback = new LocationCallback() {
             @Override
@@ -158,13 +202,11 @@ public class PlacesFragment extends Fragment {
                     }
                 }
 
-                // ✅ Sort by distance (shortest first)
-                localItems.sort((item1, item2) -> {
-                    double dist1 = calculateDistance(userLatitude, userLongitude, item1.getLatitude(), item1.getLongitude());
-                    double dist2 = calculateDistance(userLatitude, userLongitude, item2.getLatitude(), item2.getLongitude());
-                    return Double.compare(dist1, dist2);
-                });
+                localItems.sort(Comparator.comparingDouble(item ->
+                        calculateDistance(userLatitude, userLongitude, item.getLatitude(), item.getLongitude())));
 
+                filteredItems.clear();
+                filteredItems.addAll(localItems);
                 localAdapter.notifyDataSetChanged();
             }
         });
@@ -193,8 +235,9 @@ public class PlacesFragment extends Fragment {
                             favouritesItems.add(new PlaceItem(imageUrl, name, distanceText, latitude, longitude));
                         }
                     }
+
                     favouritesAdapter.notifyDataSetChanged();
-                    localAdapter.notifyDataSetChanged();
+                    localAdapter.notifyDataSetChanged(); // so hearts sync
                 });
     }
 
@@ -230,5 +273,4 @@ public class PlacesFragment extends Fragment {
             fusedLocationClient.removeLocationUpdates(locationCallback);
         }
     }
-
 }

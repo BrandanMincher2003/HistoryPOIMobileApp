@@ -176,7 +176,7 @@ public class PlaceDetailsFragment extends Fragment {
     private float calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         float[] results = new float[1];
         Location.distanceBetween(lat1, lon1, lat2, lon2, results);
-        return results[0]; // Distance in metres
+        return results[0];
     }
 
     private void saveImageDataToFirestore(String uid, String imageUrl, String lat, String lon) {
@@ -196,7 +196,6 @@ public class PlaceDetailsFragment extends Fragment {
                 .addOnSuccessListener(documentReference -> {
                     Toast.makeText(getContext(), "Saved to gallery!", Toast.LENGTH_SHORT).show();
 
-                    // ✅ Use StatsManager to handle Nottingham + Castle count + trophies
                     StatsManager statsManager = new StatsManager();
                     String cityName = cityTextView.getText().toString();
                     String placeName = nameTextView.getText().toString();

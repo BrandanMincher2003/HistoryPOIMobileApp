@@ -109,9 +109,8 @@ public class StatsManager {
                 .addOnFailureListener(e -> Log.w(TAG, "Failed to check Robin Hood trophy", e));
     }
 
-    /**
-     * Adds a trophy document to the user's trophies subcollection.
-     */
+     //Adds a trophy document to the user's trophies subcollection.
+
     private void addTrophyToUser(String name, String description) {
         Map<String, Object> trophyData = new HashMap<>();
         trophyData.put("Name", name);

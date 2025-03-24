@@ -21,8 +21,7 @@ public class PlacesActivity extends AppCompatActivity {
         binding = ActivityPlacesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // **Set up ActionBar (Fix)**
-        setSupportActionBar(binding.toolbar); // Ensure you have a <androidx.appcompat.widget.Toolbar> in your layout
+        setSupportActionBar(binding.toolbar);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
@@ -44,7 +43,7 @@ public class PlacesActivity extends AppCompatActivity {
                 R.id.nav_search
         ).build();
 
-        // **Ensure Toolbar is set up correctly**
+        // Ensures Toolbar is set up correctly
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(bottomNav, navController);
     }

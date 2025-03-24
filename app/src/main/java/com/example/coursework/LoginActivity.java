@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_loginpage);
 
-        // Initialize Firebase Auth & Firestore
+        // Initialize Firebase Auth and Firestore
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -68,9 +68,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Sets up biometric authentication
-     */
+
+     //Sets up biometric authentication
+
     private void setupBiometricAuthentication(String userId) {
         BiometricManager biometricManager = BiometricManager.from(this);
 
@@ -113,9 +113,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Logs in the user using email and password
-     */
+
+     //Logs in the user using email and password
+
     private void loginUser() {
         EditText emailField = findViewById(R.id.editTextTextEmailAddress);
         EditText passwordField = findViewById(R.id.editTextTextPassword);
@@ -162,15 +162,11 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // Do not create dummy document for gallery
+
         // Create trophies collection if it doesn't exist
         DocumentReference trophiesRef = db.collection("users").document(uid).collection("trophies").document("dummy");
         trophiesRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (!documentSnapshot.exists()) {
-                // Optionally, add default trophies or leave the collection empty
-                Map<String, Object> trophyData = new HashMap<>();
-                trophiesRef.set(trophyData);
-            }
+
         });
 
         // Add email and darkMode to the user document
@@ -180,9 +176,9 @@ public class LoginActivity extends AppCompatActivity {
         userRef.set(userData, SetOptions.merge());  // Use merge to ensure existing fields are not overwritten
     }
 
-    /**
-     * Navigates to MainActivity after login
-     */
+
+     //Navigates to MainActivity after login
+
     private void navigateToMainActivity() {
         Intent intent = new Intent(LoginActivity.this, PlacesActivity.class);
         startActivity(intent);

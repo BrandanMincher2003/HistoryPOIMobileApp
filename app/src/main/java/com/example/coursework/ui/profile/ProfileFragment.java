@@ -52,13 +52,11 @@ public class ProfileFragment extends Fragment {
             loadUserPreferences();
         }
 
-        // Dark Mode Toggle Listener
         binding.darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
             saveDarkModePreference(isChecked);
         });
 
-        // Log Out Button - Traditional way
         MaterialButton logoutButton = view.findViewById(R.id.logout_button); // Find the logout button
         logoutButton.setOnClickListener(v -> logoutUser()); // Set the click listener for the logout button
 
@@ -69,6 +67,10 @@ public class ProfileFragment extends Fragment {
         binding.dataPrivacy.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_profileFragment_to_dataPrivacyFragment);
+        });
+        binding.changePassword.setOnClickListener(v -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_profileFragment_to_changePasswordFragment);  // Navigate to ChangePasswordFragment
         });
 
 

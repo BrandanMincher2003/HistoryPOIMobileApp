@@ -33,6 +33,7 @@
         android:name="com.example.coursework.ui.places.PlacesFragment"
         android:label="Places"
         tools:layout="@layout/fragment_places" />
+
     <fragment
         android:id="@+id/cameraFragment"
         android:name="com.example.coursework.ui.camera.CameraFragment"
@@ -48,6 +49,7 @@
         android:name="com.example.coursework.ui.profile.SupportFragment"
         android:label="Support"
         tools:layout="@layout/fragment_support" />
+
     <action
         android:id="@+id/action_profileFragment_to_supportFragment"
         app:destination="@id/nav_support" />
@@ -57,26 +59,33 @@
         android:name="com.example.coursework.ui.profile.DataPrivacyFragment"
         android:label="Data &amp; Privacy"
         tools:layout="@layout/fragment_data_privacy" />
+
     <action
         android:id="@+id/action_profileFragment_to_dataPrivacyFragment"
         app:destination="@id/nav_data_privacy" />
-
 
     <fragment
         android:id="@+id/placeDetailsFragment"
         android:name="com.example.coursework.ui.places.PlaceDetailsFragment"
         android:label="Place Details"
         tools:layout="@layout/fragment_place_details" />
+
     <action
         android:id="@+id/action_placesFragment_to_placeDetailsFragment"
-        app:destination="@id/placeDetailsFragment"
-        />
+        app:destination="@id/placeDetailsFragment" />
+
     <action
         android:id="@+id/action_placeDetailsFragment_to_nav_map"
         app:destination="@id/nav_map" />
 
 
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.example.coursework.ui.profile.ChangePasswordFragment"
+        android:label="Change Password" />
 
-
+    <action
+        android:id="@+id/action_profileFragment_to_changePasswordFragment"
+        app:destination="@id/changePasswordFragment" />
 
 </navigation>

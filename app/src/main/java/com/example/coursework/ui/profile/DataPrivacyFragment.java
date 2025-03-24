@@ -14,7 +14,6 @@ import com.example.coursework.R;
 public class DataPrivacyFragment extends Fragment {
 
     public DataPrivacyFragment() {
-        // Required empty public constructor
     }
 
     @Nullable
