@@ -20,8 +20,12 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 public class LoginActivity extends AppCompatActivity {
@@ -132,6 +136,9 @@ public class LoginActivity extends AppCompatActivity {
                             userPreferences = new UserPreferences(this, user.getUid());
                             userPreferences.loadFromFirestore(); // Load preferences
 
+                            // Ensure user collections are created if they don't exist
+                            createUserCollectionsIfNeeded(user.getUid(), email);
+
                             navigateToMainActivity();
                         }
                     } else {
@@ -139,6 +146,38 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void createUserCollectionsIfNeeded(String uid, String email) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Create stats collection if it doesn't exist and set NottinghamCount to 1
+        DocumentReference statsRef = db.collection("users").document(uid).collection("stats").document(uid);
+        statsRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (!documentSnapshot.exists()) {
+                Map<String, Object> statsData = new HashMap<>();
+                statsData.put("NottinghamCount", 0);
+                statsData.put("CastleCount", 0);
+                statsRef.set(statsData);
+            }
+        });
+
+        // Do not create dummy document for gallery
+        // Create trophies collection if it doesn't exist
+        DocumentReference trophiesRef = db.collection("users").document(uid).collection("trophies").document("dummy");
+        trophiesRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (!documentSnapshot.exists()) {
+                // Optionally, add default trophies or leave the collection empty
+                Map<String, Object> trophyData = new HashMap<>();
+                trophiesRef.set(trophyData);
+            }
+        });
+
+        // Add email and darkMode to the user document
+        DocumentReference userRef = db.collection("users").document(uid);
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("email", email);
+        userRef.set(userData, SetOptions.merge());  // Use merge to ensure existing fields are not overwritten
     }
 
     /**

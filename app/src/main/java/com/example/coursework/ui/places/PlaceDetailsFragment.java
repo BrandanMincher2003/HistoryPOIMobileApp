@@ -8,6 +8,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
 import com.example.coursework.R;
+import com.example.coursework.ui.achievements.StatsManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
@@ -126,36 +128,55 @@ public class PlaceDetailsFragment extends Fragment {
             return;
         }
 
-        String uid = user.getUid();
-        String filename = "IMG_" + System.currentTimeMillis() + ".jpg";
-        String path = "images/" + uid + "/" + filename;
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(path);
-
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-                final String[] lat = {"unknown"};
-                final String[] lon = {"unknown"};
-
+            fusedLocationClient.getCurrentLocation(
+                    com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
+                    null
+            ).addOnSuccessListener(location -> {
                 if (location != null) {
-                    lat[0] = String.valueOf(location.getLatitude());
-                    lon[0] = String.valueOf(location.getLongitude());
+                    float distance = calculateDistance(location.getLatitude(), location.getLongitude(), latitude, longitude);
+                    Log.d("DEBUG", "Current location: " + location.getLatitude() + ", " + location.getLongitude());
+                    Log.d("DEBUG", "Target location: " + latitude + ", " + longitude);
+                    Log.d("DEBUG", "Distance: " + distance + " metres");
+
+                    if (distance <= 1700.0f) {
+                        uploadImageWithLocation(imageUri, user.getUid(), location.getLatitude(), location.getLongitude());
+                    } else {
+                        Toast.makeText(getContext(), "You must be within 100 metres of this location to upload an image.", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Unable to get current location", Toast.LENGTH_SHORT).show();
                 }
-
-                StorageMetadata metadata = new StorageMetadata.Builder()
-                        .setCustomMetadata("latitude", lat[0])
-                        .setCustomMetadata("longitude", lon[0])
-                        .build();
-
-                storageRef.putFile(imageUri, metadata)
-                        .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
-                            saveImageDataToFirestore(uid, downloadUri.toString(), lat[0], lon[0]);
-                            Toast.makeText(getContext(), "Image uploaded with current location!", Toast.LENGTH_SHORT).show();
-                        }))
-                        .addOnFailureListener(e -> Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }).addOnFailureListener(e -> {
+                Toast.makeText(getContext(), "Location error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             });
         } else {
             Toast.makeText(getContext(), "Location permission not granted", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void uploadImageWithLocation(Uri imageUri, String uid, double lat, double lon) {
+        String filename = "IMG_" + System.currentTimeMillis() + ".jpg";
+        String path = "images/" + uid + "/" + filename;
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(path);
+
+        StorageMetadata metadata = new StorageMetadata.Builder()
+                .setCustomMetadata("latitude", String.valueOf(lat))
+                .setCustomMetadata("longitude", String.valueOf(lon))
+                .build();
+
+        storageRef.putFile(imageUri, metadata)
+                .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                    saveImageDataToFirestore(uid, downloadUri.toString(), String.valueOf(lat), String.valueOf(lon));
+                    Toast.makeText(getContext(), "Image uploaded with current location!", Toast.LENGTH_SHORT).show();
+                }))
+                .addOnFailureListener(e -> Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private float calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        float[] results = new float[1];
+        Location.distanceBetween(lat1, lon1, lat2, lon2, results);
+        return results[0]; // Distance in metres
     }
 
     private void saveImageDataToFirestore(String uid, String imageUrl, String lat, String lon) {
@@ -174,6 +195,14 @@ public class PlaceDetailsFragment extends Fragment {
                 .add(galleryEntry)
                 .addOnSuccessListener(documentReference -> {
                     Toast.makeText(getContext(), "Saved to gallery!", Toast.LENGTH_SHORT).show();
+
+                    // ✅ Use StatsManager to handle Nottingham + Castle count + trophies
+                    StatsManager statsManager = new StatsManager();
+                    String cityName = cityTextView.getText().toString();
+                    String placeName = nameTextView.getText().toString();
+
+                    statsManager.incrementNottinghamCountIfNeeded(cityName, placeName);
+
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(getContext(), "Failed to save gallery entry: " + e.getMessage(), Toast.LENGTH_SHORT).show();

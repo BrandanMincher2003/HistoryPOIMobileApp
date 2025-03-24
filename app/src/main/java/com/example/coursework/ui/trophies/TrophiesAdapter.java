@@ -4,17 +4,23 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.coursework.R;
-import com.example.coursework.model.TrophyItem;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.List;
 
 public class TrophiesAdapter extends RecyclerView.Adapter<TrophiesAdapter.ViewHolder> {
-    private Context context;
-    private List<TrophyItem> trophyList;
+
+    private final Context context;
+    private final List<TrophyItem> trophyList;
 
     public TrophiesAdapter(Context context, List<TrophyItem> trophyList) {
         this.context = context;
@@ -31,14 +37,25 @@ public class TrophiesAdapter extends RecyclerView.Adapter<TrophiesAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         TrophyItem trophy = trophyList.get(position);
+
         holder.nameTextView.setText(trophy.getName());
         holder.descriptionTextView.setText(trophy.getDescription());
 
-        // Change background color based on achievement status
-        if (trophy.isAchieved()) {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
+        // Visually dim the item if not achieved
+        holder.itemView.setAlpha(trophy.isAchieved() ? 1.0f : 0.5f);
+
+        // Load the image from Firebase Storage using the relative path
+        String imagePath = trophy.getImagePath();
+        if (imagePath != null && !imagePath.isEmpty()) {
+            StorageReference imageRef = FirebaseStorage.getInstance().getReference().child(imagePath);
+
+            Glide.with(context)
+                    .load(imageRef)
+                    .placeholder(R.drawable.ic_trophy) // Default image while loading
+                    .error(R.drawable.ic_trophy)       // Default image if failed
+                    .into(holder.iconImageView);
         } else {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
+            holder.iconImageView.setImageResource(R.drawable.ic_trophy);
         }
     }
 
@@ -48,10 +65,12 @@ public class TrophiesAdapter extends RecyclerView.Adapter<TrophiesAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView iconImageView;
         TextView nameTextView, descriptionTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            iconImageView = itemView.findViewById(R.id.trophy_icon);
             nameTextView = itemView.findViewById(R.id.trophy_name);
             descriptionTextView = itemView.findViewById(R.id.trophy_description);
         }

@@ -89,7 +89,8 @@ public class PlacesFragment extends Fragment {
                         bundle.putString("city", city);
                         bundle.putString("description", description);
                         bundle.putString("image", image);
-
+                        bundle.putDouble("latitude", item.getLatitude());
+                        bundle.putDouble("longitude", item.getLongitude());
                         NavController navController = NavHostFragment.findNavController(this);
                         navController.navigate(R.id.action_placesFragment_to_placeDetailsFragment, bundle);
                     }
@@ -156,6 +157,14 @@ public class PlacesFragment extends Fragment {
                         localItems.add(new PlaceItem(imageUrl, name, distanceText, latitude, longitude));
                     }
                 }
+
+                // ✅ Sort by distance (shortest first)
+                localItems.sort((item1, item2) -> {
+                    double dist1 = calculateDistance(userLatitude, userLongitude, item1.getLatitude(), item1.getLongitude());
+                    double dist2 = calculateDistance(userLatitude, userLongitude, item2.getLatitude(), item2.getLongitude());
+                    return Double.compare(dist1, dist2);
+                });
+
                 localAdapter.notifyDataSetChanged();
             }
         });

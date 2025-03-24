@@ -57,19 +57,6 @@
         app:layout_constraintTop_toBottomOf="@id/galleryRegion"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_upload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_upload"
-        android:contentDescription="Upload from Gallery"
-        app:fabSize="normal"
-        app:backgroundTint="?attr/colorPrimary"
-        app:tint="@android:color/black"
-        app:layout_constraintBottom_toTopOf="@id/fab_camera"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"/>
 
 
 

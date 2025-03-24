@@ -1,22 +1,27 @@
 package com.example.coursework.ui.trophies;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.coursework.R;
-import com.example.coursework.ui.trophies.TrophiesAdapter;
-import com.example.coursework.model.TrophyItem;
+import com.example.coursework.ui.achievements.StatsManager;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TrophiesFragment extends Fragment {
 
@@ -25,9 +30,7 @@ public class TrophiesFragment extends Fragment {
     private List<TrophyItem> achievedList, notAchievedList;
     private FirebaseFirestore db;
 
-    public TrophiesFragment() {
-        // Required empty public constructor
-    }
+    public TrophiesFragment() {}
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,11 +44,7 @@ public class TrophiesFragment extends Fragment {
 
         achievedList = new ArrayList<>();
         notAchievedList = new ArrayList<>();
-
         db = FirebaseFirestore.getInstance();
-
-        // Fetch achievements from Firestore
-        loadTrophyData();
 
         achievedAdapter = new TrophiesAdapter(getContext(), achievedList);
         notAchievedAdapter = new TrophiesAdapter(getContext(), notAchievedList);
@@ -53,37 +52,54 @@ public class TrophiesFragment extends Fragment {
         achievedRecyclerView.setAdapter(achievedAdapter);
         notAchievedRecyclerView.setAdapter(notAchievedAdapter);
 
+        loadTrophyData();
+
         return view;
     }
 
     private void loadTrophyData() {
-        db.collection("achievements").get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                achievedList.clear();
-                notAchievedList.clear();
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    String name = document.getString("Name");
-                    String description = document.getString("Description");
-
-                    // Assume achievements are stored based on completion status
-                    boolean isAchieved = document.contains("Achieved") && document.getBoolean("Achieved") != null && document.getBoolean("Achieved");
-
-                    if (name != null && description != null) {
-                        TrophyItem trophy = new TrophyItem(name, description, isAchieved);
-                        if (isAchieved) {
-                            achievedList.add(trophy);
-                        } else {
-                            notAchievedList.add(trophy);
+        db.collection("users").document(uid).collection("trophies").get()
+                .addOnSuccessListener(userTrophiesSnapshot -> {
+                    Set<String> achievedTrophyNames = new HashSet<>();
+                    for (DocumentSnapshot doc : userTrophiesSnapshot.getDocuments()) {
+                        String name = doc.getString("Name");
+                        if (name != null) {
+                            achievedTrophyNames.add(name);
                         }
                     }
-                }
 
-                achievedAdapter.notifyDataSetChanged();
-                notAchievedAdapter.notifyDataSetChanged();
-            } else {
-                Toast.makeText(getContext(), "Failed to load achievements", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    db.collection("achievements").get().addOnSuccessListener(achievementSnapshot -> {
+                        achievedList.clear();
+                        notAchievedList.clear();
+
+                        for (QueryDocumentSnapshot doc : achievementSnapshot) {
+                            String name = doc.getString("Name");
+                            String description = doc.getString("Description");
+                            String image = doc.getString("Image");
+
+                            if (name != null && description != null) {
+                                boolean isAchieved = achievedTrophyNames.contains(name);
+                                TrophyItem trophy = new TrophyItem(name, description, isAchieved, image);
+
+                                if (isAchieved) {
+                                    achievedList.add(trophy);
+                                } else {
+                                    notAchievedList.add(trophy);
+                                }
+                            }
+                        }
+
+                        achievedAdapter.notifyDataSetChanged();
+                        notAchievedAdapter.notifyDataSetChanged();
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "Failed to load achievements", Toast.LENGTH_SHORT).show();
+                    });
+
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "Failed to load your trophies", Toast.LENGTH_SHORT).show();
+                });
     }
 }

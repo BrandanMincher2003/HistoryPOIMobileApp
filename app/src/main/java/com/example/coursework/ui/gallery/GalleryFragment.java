@@ -61,19 +61,6 @@ public class GalleryFragment extends Fragment {
                 }
             });
 
-    private final ActivityResultLauncher<Intent> galleryPickerLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    Uri selectedImageUri = result.getData().getData();
-                    if (selectedImageUri != null) {
-                        uploadImageToFirebase(selectedImageUri);
-                    }
-                } else {
-                    Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
-                }
-            });
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_gallery, container, false);
@@ -83,7 +70,6 @@ public class GalleryFragment extends Fragment {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
         view.findViewById(R.id.fab_camera).setOnClickListener(v -> openSystemCamera());
-        view.findViewById(R.id.fab_upload).setOnClickListener(v -> openGalleryPicker());
 
         loadGalleryItems();
 
@@ -107,12 +93,6 @@ public class GalleryFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "Error creating image file", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void openGalleryPicker() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/*");
-        galleryPickerLauncher.launch(intent);
     }
 
     private void uploadImageToFirebase(Uri imageUri) {
