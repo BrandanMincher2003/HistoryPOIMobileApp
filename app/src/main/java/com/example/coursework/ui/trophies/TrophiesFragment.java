@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
+// fragmetn for displaying all the trohpies from the user sub collection and the main achievement collection
 public class TrophiesFragment extends Fragment {
 
     private RecyclerView achievedRecyclerView, notAchievedRecyclerView;
@@ -57,6 +59,7 @@ public class TrophiesFragment extends Fragment {
         return view;
     }
 
+    // method for loading the data from trophies user subcollection
     private void loadTrophyData() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -70,15 +73,18 @@ public class TrophiesFragment extends Fragment {
                         }
                     }
 
+                    // fetches the rest of the achievements from achievement collection
                     db.collection("achievements").get().addOnSuccessListener(achievementSnapshot -> {
                         achievedList.clear();
                         notAchievedList.clear();
 
+                        // loops through the acheivements to add them to correct section acheived or not acheived
                         for (QueryDocumentSnapshot doc : achievementSnapshot) {
                             String name = doc.getString("Name");
                             String description = doc.getString("Description");
                             String image = doc.getString("Image");
 
+                            // if user has it in sub collection its achieved
                             if (name != null && description != null) {
                                 boolean isAchieved = achievedTrophyNames.contains(name);
                                 TrophyItem trophy = new TrophyItem(name, description, isAchieved, image);
@@ -90,7 +96,7 @@ public class TrophiesFragment extends Fragment {
                                 }
                             }
                         }
-
+                        // makes adapter change due to new information
                         achievedAdapter.notifyDataSetChanged();
                         notAchievedAdapter.notifyDataSetChanged();
                     }).addOnFailureListener(e -> {

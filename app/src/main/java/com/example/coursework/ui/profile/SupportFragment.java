@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.coursework.R;
 
+// basic information fragment with support data and a support number for users to get support on the application
 public class SupportFragment extends Fragment {
 
     public SupportFragment() {}

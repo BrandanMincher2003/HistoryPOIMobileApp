@@ -16,16 +16,21 @@ import com.example.coursework.R;
 
 import java.util.List;
 
+// this is an adapter for displaying gallery items in the recyclervieew
+
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder> {
 
     private final Context context;
     private final List<GalleryItem> galleryItems;
 
+    // constructor for initialising context and gallery items
     public GalleryAdapter(Context context, List<GalleryItem> galleryItems) {
         this.context = context;
         this.galleryItems = galleryItems;
     }
 
+
+    // the view holder for each item in the recycler
     @NonNull
     @Override
     public GalleryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -33,6 +38,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         return new GalleryViewHolder(view);
     }
 
+    // binds the data to the views in the viewholder
     @Override
     public void onBindViewHolder(@NonNull GalleryViewHolder holder, int position) {
         GalleryItem item = galleryItems.get(position);
@@ -48,15 +54,18 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         });
     }
 
+    // returns the total number of items in the view
     @Override
     public int getItemCount() {
         return galleryItems.size();
     }
 
+    // view holdr vlass
     public static class GalleryViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView locationName, date;
 
+        // view contructor
         public GalleryViewHolder(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.galleryImage);

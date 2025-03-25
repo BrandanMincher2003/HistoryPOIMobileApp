@@ -26,6 +26,7 @@ import java.util.Set;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
+    // Declaring Varibles
     private Context context;
     private List<PlaceItem> items;
     private OnPlaceClickListener onPlaceClickListener;
@@ -33,16 +34,20 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    // handles place click
     public interface OnPlaceClickListener {
         void onPlaceClick(PlaceItem placeItem);
     }
 
+    // ImageAdapter contructor to initialise variables
     public ImageAdapter(Context context, List<PlaceItem> items, Set<String> favouritePlaceNames, OnPlaceClickListener listener) {
         this.context = context;
         this.items = items;
         this.favouritePlaceNames = favouritePlaceNames;
         this.onPlaceClickListener = listener;
     }
+
+    // Inflates the view for each item in the RecyclerView
 
     @NonNull
     @Override
@@ -51,13 +56,20 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         return new ViewHolder(view);
     }
 
+    // Binds data to the views in each item of the RecyclerView
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PlaceItem item = items.get(position);
 
+        // uses glide to load the images
         Glide.with(context).load(item.getImageUrl()).into(holder.imageView);
+
+        //sets the text for name and distance
         holder.name.setText(item.getName());
         holder.distance.setText(item.getDistance());
+
+        // Handle heart icon click (add or remove from favourites)
 
         boolean isFavourited = favouritePlaceNames.contains(item.getName());
         holder.heartIcon.setColorFilter(ContextCompat.getColor(context,
@@ -83,6 +95,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         });
     }
 
+    // function to add place to users favourites subcollection
     private void addToFavourites(PlaceItem item) {
         Map<String, Object> data = new HashMap<>();
         data.put("Name", item.getName());
@@ -95,7 +108,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 .collection("favourites")
                 .add(data);
     }
-
+    // function to remove a place to users facourites in subcollection
     private void removeFromFavourites(PlaceItem item) {
         db.collection("users")
                 .document(currentUserId)
@@ -112,12 +125,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                     }
                 });
     }
-
+    // returns total number of items in the list
     @Override
     public int getItemCount() {
         return items.size();
     }
 
+    // the view holder class which holds the view for the items in the recyclerview
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView, heartIcon;
         TextView name, distance;

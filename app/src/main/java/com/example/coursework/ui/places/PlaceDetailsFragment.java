@@ -40,13 +40,16 @@ import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
 import java.util.Map;
 
+//the placesdetailsfragment class for displaying details of places when clicked with upload fab
 public class PlaceDetailsFragment extends Fragment {
 
+    //decalring variables
     private TextView nameTextView, cityTextView, descriptionTextView;
     private ImageView placeImageView;
     private FusedLocationProviderClient fusedLocationClient;
     private double latitude, longitude;
 
+    // this handles image selection from the phones gallery
     private final ActivityResultLauncher<Intent> galleryPickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -60,28 +63,38 @@ public class PlaceDetailsFragment extends Fragment {
                 }
             });
 
+    //default contructtor
     public PlaceDetailsFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // inflates the fragments layout
+
         View view = inflater.inflate(R.layout.fragment_place_details, container, false);
 
+        //initialises the ui components
         nameTextView = view.findViewById(R.id.textViewName);
         cityTextView = view.findViewById(R.id.textViewCity);
         descriptionTextView = view.findViewById(R.id.textViewDescription);
         placeImageView = view.findViewById(R.id.imageViewPlace);
+
+        //finds the floating action buttons for upload and finding location of place
         View fabUpload = view.findViewById(R.id.fab_upload);
         View fabFindLocation = view.findViewById(R.id.fab_find_location);
 
+        // inits the location client
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
+        // the listeners for the the fab buttons
         fabUpload.setOnClickListener(v -> openGalleryPicker());
 
         fabFindLocation.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
+            //data prep for navigation to map
             bundle.putDouble("latitude", latitude);
             bundle.putDouble("longitude", longitude);
 
+            // navigates to the map fragment with the data for zoom
             NavController navController = NavHostFragment.findNavController(PlaceDetailsFragment.this);
 
             NavOptions navOptions = new NavOptions.Builder()
@@ -91,6 +104,7 @@ public class PlaceDetailsFragment extends Fragment {
             navController.navigate(R.id.nav_map, bundle, navOptions);
         });
 
+        // gets the place details and sets them to the UI
         if (getArguments() != null) {
             nameTextView.setText(getArguments().getString("name"));
             cityTextView.setText(getArguments().getString("city"));
@@ -106,6 +120,7 @@ public class PlaceDetailsFragment extends Fragment {
                 longitude = 0.0;
             }
 
+            // uses glide to load the images from the urls in the firebase clodu storage
             Glide.with(this)
                     .load(imageUrl)
                     .into(placeImageView);
@@ -114,12 +129,14 @@ public class PlaceDetailsFragment extends Fragment {
         return view;
     }
 
+    // function for opening the gallery
     private void openGalleryPicker() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
         galleryPickerLauncher.launch(intent);
     }
 
+    // uploading the selected photo to the firebase storage for in app gallery
     private void uploadImageToFirebase(Uri imageUri) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -128,6 +145,7 @@ public class PlaceDetailsFragment extends Fragment {
             return;
         }
 
+        // this checks if the current location is within rules
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.getCurrentLocation(
                     com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
@@ -139,6 +157,7 @@ public class PlaceDetailsFragment extends Fragment {
                     Log.d("DEBUG", "Target location: " + latitude + ", " + longitude);
                     Log.d("DEBUG", "Distance: " + distance + " metres");
 
+                    // this is set as 1.7km but would usually be 100meters
                     if (distance <= 1700.0f) {
                         uploadImageWithLocation(imageUri, user.getUid(), location.getLatitude(), location.getLongitude());
                     } else {
@@ -155,6 +174,7 @@ public class PlaceDetailsFragment extends Fragment {
         }
     }
 
+    // uploads the image with metadata longitude and latitude
     private void uploadImageWithLocation(Uri imageUri, String uid, double lat, double lon) {
         String filename = "IMG_" + System.currentTimeMillis() + ".jpg";
         String path = "images/" + uid + "/" + filename;
@@ -173,12 +193,14 @@ public class PlaceDetailsFragment extends Fragment {
                 .addOnFailureListener(e -> Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
+    // calculates the distance for doing it to location and user for rules for uploading
     private float calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         float[] results = new float[1];
         Location.distanceBetween(lat1, lon1, lat2, lon2, results);
         return results[0];
     }
 
+    // saves the image  to the firestore with uid
     private void saveImageDataToFirestore(String uid, String imageUrl, String lat, String lon) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 

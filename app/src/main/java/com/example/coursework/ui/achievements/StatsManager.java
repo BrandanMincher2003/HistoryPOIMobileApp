@@ -24,9 +24,9 @@ public class StatsManager {
     private final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private final DocumentReference statsRef = db.collection("users").document(uid).collection("stats").document(uid);
 
-    /**
-     * Increments visit counters based on location and manages trophies.
-     */
+
+     //Increments visit counters based on location and manages trophies.
+
     public void incrementNottinghamCountIfNeeded(String cityName, String placeName) {
         boolean isNottingham = "Nottingham".equalsIgnoreCase(cityName);
         boolean isCastle = "Nottingham Castle".equalsIgnoreCase(placeName);
@@ -65,9 +65,9 @@ public class StatsManager {
         }).addOnFailureListener(e -> Log.w(TAG, "Failed to retrieve stats document", e));
     }
 
-    /**
-     * Updates trophies if the user meets new achievement conditions.
-     */
+
+    //Updates trophies if the user meets new achievement conditions.
+
     private void updateTrophiesIfNeeded(long nottinghamCount, boolean isCastle, long currentCastleCount) {
         checkNottinghamTrophies(nottinghamCount);
         if (isCastle && currentCastleCount < 1) {

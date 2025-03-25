@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.coursework.R;
 
+// small fragment with basic data and privacy detail on how the application and why it stores various user details
 public class DataPrivacyFragment extends Fragment {
 
     public DataPrivacyFragment() {

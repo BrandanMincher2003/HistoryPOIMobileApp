@@ -10,6 +10,8 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.coursework.databinding.ActivityPlacesBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+
+// the main acitivty where all the fragments are binded onto it holds the bottom navbar and toolbar
 public class PlacesActivity extends AppCompatActivity {
 
     private ActivityPlacesBinding binding;
@@ -25,7 +27,7 @@ public class PlacesActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
-        // Find NavController correctly
+        // finds the navController correctly
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
         if (navHostFragment == null) {
@@ -34,7 +36,7 @@ public class PlacesActivity extends AppCompatActivity {
 
         NavController navController = navHostFragment.getNavController();
 
-        // Define top-level destinations
+        // defines the  top-level navigation fragments max 5 for m3 guidelines
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_gallery,
                 R.id.nav_trophies,
@@ -43,7 +45,7 @@ public class PlacesActivity extends AppCompatActivity {
                 R.id.nav_search
         ).build();
 
-        // Ensures Toolbar is set up correctly
+        // ensures that the toolbar is set up
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(bottomNav, navController);
     }

@@ -44,6 +44,7 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // instances db auth and gets current user from auth
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -52,22 +53,27 @@ public class ProfileFragment extends Fragment {
             loadUserPreferences();
         }
 
+        // binding for nightmode ui
         binding.darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
             saveDarkModePreference(isChecked);
         });
 
+        // finds logout button for onclick listenerr
         MaterialButton logoutButton = view.findViewById(R.id.logout_button); // Find the logout button
         logoutButton.setOnClickListener(v -> logoutUser()); // Set the click listener for the logout button
 
+        // onclick listenrn for support fragment
         binding.support.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_profileFragment_to_supportFragment);
         });
+        // binding for navigation to datapriv fragmengt
         binding.dataPrivacy.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_profileFragment_to_dataPrivacyFragment);
         });
+        // binding and onclick listening for change password frag navigation
         binding.changePassword.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
             navController.navigate(R.id.action_profileFragment_to_changePasswordFragment);  // Navigate to ChangePasswordFragment
@@ -78,9 +84,9 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    /**
-     * Loads user preferences from Firestore
-     */
+
+     //loads user preferences from firestore
+
     private void loadUserPreferences() {
         DocumentReference userRef = db.collection("users").document(currentUser.getUid());
 
@@ -95,27 +101,27 @@ public class ProfileFragment extends Fragment {
         }).addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to load preferences", Toast.LENGTH_SHORT).show());
     }
 
-    /**
-     * Saves Dark Mode preference to Firestore
-     */
+
+     //saves dark mode preference to firestore
+
     private void saveDarkModePreference(boolean isDarkMode) {
         db.collection("users").document(currentUser.getUid())
                 .update("darkMode", isDarkMode)
                 .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to update preference", Toast.LENGTH_SHORT).show());
     }
 
-    /**
-     * Logs out the current user from Firebase Authentication
-     */
+
+    //Logs out the current user from Firebase Authentication this forgets remember me too
+
     private void logoutUser() {
         mAuth.signOut();
         Toast.makeText(requireContext(), "Logged out successfully!", Toast.LENGTH_SHORT).show();
         navigateToLogin();
     }
 
-    /**
-     * Navigates to LoginActivity after logout
-     */
+
+     //navigates to loginactiivty after logout
+
     private void navigateToLogin() {
         Intent intent = new Intent(requireContext(), LoginActivity.class);
         startActivity(intent);

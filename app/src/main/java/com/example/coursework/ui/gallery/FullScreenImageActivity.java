@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.coursework.R;
 
+
+// this is for full screening the image when you click on the image in gallery
 public class FullScreenImageActivity extends AppCompatActivity {
 
     @Override

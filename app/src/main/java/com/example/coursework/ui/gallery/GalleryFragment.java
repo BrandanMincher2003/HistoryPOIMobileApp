@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+// fragment for gallery with image uploading fab
 public class GalleryFragment extends Fragment {
 
     private RecyclerView recyclerView;
@@ -51,6 +52,8 @@ public class GalleryFragment extends Fragment {
 
     public GalleryFragment() {}
 
+
+    // registers camera actiivtyresultlauncher to handle capturing image
     private final ActivityResultLauncher<Intent> cameraLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -61,6 +64,7 @@ public class GalleryFragment extends Fragment {
                 }
             });
 
+    // initialising fragment view with recyclerview and fab click listener
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_gallery, container, false);
@@ -69,13 +73,16 @@ public class GalleryFragment extends Fragment {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
 
+        // sets the onclick listener for capturing photos
         view.findViewById(R.id.fab_camera).setOnClickListener(v -> openSystemCamera());
 
+        // loads all the gallery items
         loadGalleryItems();
 
         return view;
     }
 
+    // opens the system camera and saves it to phone storage
     private void openSystemCamera() {
         String filename = "IMG_" + System.currentTimeMillis() + ".jpg";
         ContentValues values = new ContentValues();
@@ -95,76 +102,15 @@ public class GalleryFragment extends Fragment {
         }
     }
 
-    private void uploadImageToFirebase(Uri imageUri) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (user == null) {
-            Toast.makeText(getContext(), "Please log in to upload images", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String uid = user.getUid();
-        String filename = "IMG_" + System.currentTimeMillis() + ".jpg";
-        String path = "images/" + uid + "/" + filename;
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(path);
-
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-                final String[] lat = {"unknown"};
-                final String[] lon = {"unknown"};
-
-                if (location != null) {
-                    lat[0] = String.valueOf(location.getLatitude());
-                    lon[0] = String.valueOf(location.getLongitude());
-                }
-
-                StorageMetadata metadata = new StorageMetadata.Builder()
-                        .setCustomMetadata("latitude", lat[0])
-                        .setCustomMetadata("longitude", lon[0])
-                        .build();
-
-                storageRef.putFile(imageUri, metadata)
-                        .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
-                            saveImageDataToFirestore(uid, downloadUri.toString(), lat[0], lon[0], filename);
-                            Toast.makeText(getContext(), "Image uploaded with current location!", Toast.LENGTH_SHORT).show();
-                        }))
-                        .addOnFailureListener(e -> Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-            });
-        } else {
-            Toast.makeText(getContext(), "Location permission not granted", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void saveImageDataToFirestore(String uid, String imageUrl, String lat, String lon, String name) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        Map<String, Object> galleryEntry = new HashMap<>();
-        galleryEntry.put("Image", imageUrl);
-        galleryEntry.put("Latitude", lat);
-        galleryEntry.put("Longitude", lon);
-        galleryEntry.put("Name", name);
-        galleryEntry.put("date", String.valueOf(System.currentTimeMillis()));
-
-        db.collection("users")
-                .document(uid)
-                .collection("gallery")
-                .add(galleryEntry)
-                .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(getContext(), "Saved to gallery!", Toast.LENGTH_SHORT).show();
-                    loadGalleryItems();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "Failed to save gallery entry: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
-
+    // function for loading gallery itenms from the firebase user gallery subcollection
     private void loadGalleryItems() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        // sets instance and location for gallery
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference galleryRef = db.collection("users")
                 .document(user.getUid())
@@ -176,7 +122,7 @@ public class GalleryFragment extends Fragment {
                 String imageUrl = doc.getString("Image");
                 String locationName = doc.getString("Name");
                 String dateRaw = doc.getString("date");
-
+                // formatting the data from gallery
                 String formattedDate;
                 try {
                     long millis = Long.parseLong(dateRaw);
@@ -185,10 +131,11 @@ public class GalleryFragment extends Fragment {
                 } catch (Exception e) {
                     formattedDate = dateRaw; // fallback
                 }
-
+                // adds gallery item
                 galleryItems.add(new GalleryItem(imageUrl, locationName, formattedDate));
             }
 
+            // sets the adapter after adding the gallery items
             adapter = new GalleryAdapter(getContext(), galleryItems);
             recyclerView.setAdapter(adapter);
         }).addOnFailureListener(e -> {

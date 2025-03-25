@@ -7,28 +7,24 @@
     android:layout_height="match_parent"
     tools:context=".ui.map.MapFragment">
 
-
-
-
-    <!-- Search Bar -->
-    <com.google.android.material.search.SearchBar
-        android:id="@+id/search_bar"
+    <!-- Search View for searching locations by name -->
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_view"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="12dp"
-        android:backgroundTint="?attr/colorSurface"
-        android:hint="Search Locations"
+        android:queryHint="Search Locations"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:textColorHint="@android:color/white"
+        android:textColor="@android:color/white"
+        android:backgroundTint="?attr/colorSurface"
         app:elevation="4dp"
         app:strokeWidth="1dp"
-        app:strokeColor="@android:color/white"
-        android:textColorHint="@android:color/white"
-        android:textColor="@android:color/white"/>
+        app:strokeColor="@android:color/white"/>
 
     <!-- Google Maps Fragment -->
-
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -41,6 +37,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.9"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_bar" />
+        app:layout_constraintTop_toBottomOf="@+id/search_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

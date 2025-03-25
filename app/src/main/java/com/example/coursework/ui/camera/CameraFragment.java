@@ -36,7 +36,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+// Opens Android Camera on the fragment from the fab on gallery fragment
+
 public class CameraFragment extends Fragment {
+
+
+    // Declaring Variables
 
     private PreviewView previewView;
     private ImageButton captureButton, closeButton;
@@ -48,6 +53,9 @@ public class CameraFragment extends Fragment {
 
     private static final String TAG = "CameraFragment";
 
+    private static final int CAMERA_PERMISSION_REQUEST_CODE = 101;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 102;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_camera, container, false);
@@ -57,6 +65,9 @@ public class CameraFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
+
+
+        // Linking UI elements to java
 
         previewView = view.findViewById(R.id.previewView);
         captureButton = view.findViewById(R.id.captureButton);
@@ -71,26 +82,30 @@ public class CameraFragment extends Fragment {
         closeButton.setOnClickListener(v -> navController.popBackStack());
     }
 
+    // requests camera permissions before starting it
+
     private void requestPermissions() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.CAMERA}, 101);
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
         } else {
             startCamera();
         }
 
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 102);
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 
+    // starts the camera
     private void startCamera() {
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext());
         cameraProviderFuture.addListener(() -> {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
 
+                // starts the camera facing forward
                 CameraSelector cameraSelector = new CameraSelector.Builder()
                         .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                         .build();
@@ -112,6 +127,7 @@ public class CameraFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
+    // takes photo and saves it to android gallery
     private void takePhoto() {
         String fileName = "IMG_" + System.currentTimeMillis() + ".jpg";
         ContentValues contentValues = new ContentValues();
@@ -147,10 +163,34 @@ public class CameraFragment extends Fragment {
                 });
     }
 
+
+    // removes the camera when clicked off
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (cameraExecutor != null) cameraExecutor.shutdown();
         Log.d(TAG, "Executor shut down.");
+    }
+
+    // Handle permission request results
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startCamera();
+            } else {
+                Toast.makeText(requireContext(), "Camera permission is required", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        // requests location permissions
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+                Toast.makeText(requireContext(), "Location permission is required", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

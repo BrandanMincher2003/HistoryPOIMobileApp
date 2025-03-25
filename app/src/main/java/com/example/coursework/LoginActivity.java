@@ -42,25 +42,25 @@ public class LoginActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_loginpage);
 
-        // Initialize Firebase Auth and Firestore
+        // initialises firebase auth and firestore cloud
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Find UI elements
+        // finds ui elements
         MaterialButton signUpButton = findViewById(R.id.signUpLink);
         MaterialButton loginButton = findViewById(R.id.loginButton);
         rememberMeSwitch = findViewById(R.id.switch1);
 
-        // Handle sign-up button click
+        // hdanles sign up button click
         signUpButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
             startActivity(intent);
         });
 
-        // Handle login button click
+        // handles login button click
         loginButton.setOnClickListener(v -> loginUser());
 
-        // Biometric authentication check
+        // does the biometric authentication check
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             userPreferences = new UserPreferences(this, user.getUid());
@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-     //Sets up biometric authentication
+     //sets  up the biometric authentication
 
     private void setupBiometricAuthentication(String userId) {
         BiometricManager biometricManager = BiometricManager.from(this);
@@ -114,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-     //Logs in the user using email and password
+     //logs the user in using email and password
 
     private void loginUser() {
         EditText emailField = findViewById(R.id.editTextTextEmailAddress);
@@ -151,7 +151,7 @@ public class LoginActivity extends AppCompatActivity {
     private void createUserCollectionsIfNeeded(String uid, String email) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Create stats collection if it doesn't exist and set NottinghamCount to 1
+        // creation of stats collection if it doesn't exist and set NottinghamCount to 1
         DocumentReference statsRef = db.collection("users").document(uid).collection("stats").document(uid);
         statsRef.get().addOnSuccessListener(documentSnapshot -> {
             if (!documentSnapshot.exists()) {
@@ -163,13 +163,13 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-        // Create trophies collection if it doesn't exist
+        // creation of trophies collection if it doesn't exist
         DocumentReference trophiesRef = db.collection("users").document(uid).collection("trophies").document("dummy");
         trophiesRef.get().addOnSuccessListener(documentSnapshot -> {
 
         });
 
-        // Add email and darkMode to the user document
+        // adds email and darkMode to the user document
         DocumentReference userRef = db.collection("users").document(uid);
         Map<String, Object> userData = new HashMap<>();
         userData.put("email", email);
@@ -177,7 +177,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-     //Navigates to MainActivity after login
+     //this navigated to MainActivity(which is PlacesActivity) after login
 
     private void navigateToMainActivity() {
         Intent intent = new Intent(LoginActivity.this, PlacesActivity.class);

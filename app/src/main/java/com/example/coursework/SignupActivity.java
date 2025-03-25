@@ -20,7 +20,6 @@ import com.google.android.material.button.MaterialButton;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class SignupActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -32,17 +31,17 @@ public class SignupActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // Initialize Firebase Auth
+        // initialises the firebase auth
         mAuth = FirebaseAuth.getInstance();
 
-        // Ensure system bar insets are applied properly
+        // esnures that the system bar insets are applied properly
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        // Find the signup button and set click listener
+        // finds  the signup button and sets an on click listener
         MaterialButton signupButton = findViewById(R.id.button);
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,7 +50,7 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
-        // Find the login text button and set click listener
+        // finds the login text button and set the on click listener
         MaterialButton loginTextButton = findViewById(R.id.loginText);
         loginTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,50 +64,56 @@ public class SignupActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            // User is signed in, use an intent to move to another activity
-        }
+        // it will check if user is signed in (non-null) and update ui accordingly.
     }
 
+    // method to sign up the user with the details they enter
     private void signupUser() {
+
+        // ui elements find by id set to variables
         EditText emailField = findViewById(R.id.editTextTextEmailAddress);
         EditText passwordField = findViewById(R.id.editTextTextPassword);
         EditText confirmPasswordField = findViewById(R.id.editTextTextConfirmPassword);
 
+        // trims them down
         String email = emailField.getText().toString().trim();
         String password = passwordField.getText().toString().trim();
         String confirmPassword = confirmPasswordField.getText().toString().trim();
 
-        // Check if email, password, and confirm password are empty
+        // checks if email, password, and confirm password are empty
         if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             Toast.makeText(SignupActivity.this, "Please enter email and password", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Check if passwords match
+        // checks if passwords match
         if (!password.equals(confirmPassword)) {
             Toast.makeText(SignupActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Proceed to create the user
+        // checks password complexity (at least 8 characters, a capital letter, and a number)
+        if (password.length() < 8 || !password.matches(".*[A-Z].*") || !password.matches(".*[0-9].*")) {
+            Toast.makeText(SignupActivity.this, "Password must be at least 8 characters long, contain a capital letter, and a number.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // goes ahead with creating the user
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Signup success, move to login page
+                            // singup is success, navigate to login page without signing in
                             Log.d("SignupActivity", "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(SignupActivity.this, "Signup successful!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
                             startActivity(intent);
                         } else {
-                            // If signup fails, display a message to the user.
+                            // If signup fails, display a message to the user with the specific error
                             Log.w("SignupActivity", "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(SignupActivity.this, "Signup failed. Try again.", Toast.LENGTH_SHORT).show();
+                            String errorMessage = task.getException() != null ? task.getException().getMessage() : "Signup failed. Try again.";
+                            Toast.makeText(SignupActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
