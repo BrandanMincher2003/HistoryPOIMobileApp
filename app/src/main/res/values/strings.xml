@@ -16,7 +16,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_places">PlacesActivity</string>
 
-    <string name="google_maps_key">AIzaSyAvd_kMHvP5sjSj9wOAVb-7NfhBNYzvmlQ</string>
+    <string name="google_maps_key">excluded</string>
     <string name="image_description">Image item in the carousel</string>
     <string name="confirm_password">Confirm Password\n</string>
 
